@@ -1,0 +1,27 @@
+import pandas as pd
+import numpy as np
+from sklearn.datasets import load_iris
+import matplotlib.pyplot as plt
+
+iris=load_iris()
+dfiris = pd.DataFrame(iris.data, columns=iris.feature_names)
+#dff=pd.DataFrame(iris.target)
+#print(dff)
+#df=pd.DataFrame(iris.target_names)
+#print(df)
+dfiris.columns = dfiris.columns.str.replace(" ", "_")
+
+dfiris['species'] = pd.Categorical.from_codes(iris.target, iris.target_names)
+#dfiris.head()
+
+from sklearn.decomposition import PCA
+feats = dfiris.iloc[:, :4]
+from sklearn.preprocessing import StandardScaler
+norm_feats = StandardScaler().fit_transform(feats) # normalizing the features
+print("mean = ", np.mean(norm_feats), ", std = ", np.std(norm_feats))
+pca = PCA(n_components = 2).fit_transform(norm_feats)
+pca_df = pd.DataFrame(data = pca, columns = ['principo1', 'principo2'])
+dfir=pca_df
+dfir['species'] = dfiris.species
+#pca_df.head()
+sns.pairplot(pca_df, kind = 'scatter',hue='species');
